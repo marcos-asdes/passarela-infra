@@ -6,8 +6,8 @@ services:
     env_file:
       - .env
     ports:
-      - '80:80'
-      - '443:443'
+      - "80:80"
+      - "443:443"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - passarela-caddy-data:/data
@@ -38,14 +38,14 @@ services:
     image: mongo:8.0
     container_name: passarela-mongo
     restart: unless-stopped
-    command: ['mongod', '--quiet', '--logpath', '/dev/null']
+    command: ["mongod", "--quiet", "--logpath", "/dev/null"]
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USER}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
     volumes:
       - passarela-mongo-data:/data/db
     healthcheck:
-      test: ['CMD', 'mongosh', '--quiet', '--eval', "db.adminCommand('ping')"]
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
       interval: 30s
       timeout: 10s
       retries: 10
