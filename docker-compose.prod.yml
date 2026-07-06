@@ -1,0 +1,63 @@
+services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: passarela-caddy
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - passarela-caddy-data:/data
+      - passarela-caddy-config:/config
+    networks:
+      - passarela
+
+  api:
+    image: ghcr.io/${GHCR_OWNER}/passarela-api:latest
+    container_name: passarela-api
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - passarela
+
+  web:
+    image: ghcr.io/${GHCR_OWNER}/passarela-web:latest
+    container_name: passarela-web
+    restart: unless-stopped
+    networks:
+      - passarela
+
+  mongo:
+    image: mongo:8.0
+    container_name: passarela-mongo
+    restart: unless-stopped
+    command: ['mongod', '--quiet', '--logpath', '/dev/null']
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
+    volumes:
+      - passarela-mongo-data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--quiet', '--eval', "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - passarela
+
+networks:
+  passarela:
+    driver: bridge
+
+volumes:
+  passarela-mongo-data:
+  passarela-caddy-data:
+  passarela-caddy-config:
