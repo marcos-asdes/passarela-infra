@@ -1,4 +1,6 @@
-# Passarela — Infraestrutura de Deploy
+<p align="center">
+  <img src="docs/logo.png" alt="Passarela" width="360" />
+</p>
 
 Repositório de infraestrutura do **Passarela** (`backend/` e `frontend/` são repositórios git próprios, irmãos deste). Contém tudo que roda na VPS de produção: `docker-compose.prod.yml`, `Caddyfile` (proxy reverso + HTTPS automático) e o runbook de setup abaixo.
 
